@@ -1,0 +1,10 @@
+[package]
+name = "purisp"
+version = "0.1.0"
+authors = ["masahiko-ofgp <ichigyo.zanmai@gmail.com>"]
+edition = "2018"
+license = "MIT"
+description = "Pure Lisp with Rust."
+readme = "README.md"
+
+[dependencies]
