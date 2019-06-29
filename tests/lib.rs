@@ -7,10 +7,10 @@ fn test_atom() {
     let empty_list = Form::List(vec![]);
     let list = Form::from(vec!["1", "2"]);
 
-    assert_eq!(atm.atom(), true);
-    assert_eq!(nil.atom(), true);
-    assert_eq!(empty_list.atom(), true);
-    assert_eq!(list.atom(), false);
+    assert_eq!(atm.atom(), Form::T);
+    assert_eq!(nil.atom(), Form::T);
+    assert_eq!(empty_list.atom(), Form::T);
+    assert_eq!(list.atom(), Form::Nil);
 }
 
 #[test]
@@ -79,4 +79,22 @@ fn test_append() {
             Form::Atom("1".to_string()),
             Form::Atom("2".to_string()),
         ]));
+}
+
+#[test]
+fn test_and_not() {
+    let atm1 = Form::from("1");
+    let atm2 = Form::from("2");
+
+    assert_eq!(
+        &atm1.atom().and_(&atm2.atom()),
+        &Form::T
+        );
+
+    let list = Form::from(vec!["hello"]);
+
+    assert_eq!(
+        &list.atom().not_(),
+        &Form::T
+        );
 }
