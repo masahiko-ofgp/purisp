@@ -9,6 +9,7 @@ Pure Lisp with Rust ??
 - [x] cdr
 - [x] pair
 - [x] assoc
+- [x] append
 - [x] eq
 - [x] null
 - [ ] eval

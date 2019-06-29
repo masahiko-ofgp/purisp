@@ -65,3 +65,18 @@ fn test_pair_assoc() {
         Some(Form::Atom("1".to_string()))
         );
 }
+
+#[test]
+fn test_append() {
+    let mut list1 = Form::from(vec!["1"]);
+    let mut list2 = Form::from(vec!["2"]);
+
+    &mut list1.append(&mut list2);
+
+    assert_eq!(
+        list1,
+        Form::List(vec![
+            Form::Atom("1".to_string()),
+            Form::Atom("2".to_string()),
+        ]));
+}
