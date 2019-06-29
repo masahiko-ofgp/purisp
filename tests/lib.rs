@@ -1,4 +1,29 @@
-use purisp::core::Form;
+use purisp::core::{Symbol, Form};
+
+#[test]
+fn test_symbol() {
+    assert_eq!(
+        Symbol::from("quote"),
+        Symbol::Quote,
+    );
+
+    let sym_atom = Symbol::Atom;
+    
+    assert_eq!(
+        &sym_atom.quote(),
+        &Form::Atom("atom".to_string())
+    );
+}
+
+#[test]
+fn test_to_symbol() {
+    let atm = Form::from("cons");
+
+    assert_eq!(
+        &atm.to_symbol(),
+        &Symbol::Cons,
+        );
+}
 
 #[test]
 fn test_atom() {
@@ -87,14 +112,14 @@ fn test_and_not() {
     let atm2 = Form::from("2");
 
     assert_eq!(
-        &atm1.atom().and_(&atm2.atom()),
+        &atm1.atom().and(&atm2.atom()),
         &Form::T
         );
 
     let list = Form::from(vec!["hello"]);
 
     assert_eq!(
-        &list.atom().not_(),
+        &list.atom().not(),
         &Form::T
         );
 }

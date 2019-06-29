@@ -5,6 +5,64 @@
 // This file may not be copied, modified, on distributed except
 //  according to those terms.
 
+#[allow(dead_code)]
+#[derive(Debug, PartialEq)]
+pub enum Symbol {
+    Quote,
+    Atom,
+    Cons,
+    Car,
+    Cdr,
+    Pair,
+    Assoc,
+    Eq,
+    And,
+    Not,
+    Null,
+    Lambda,
+    If,
+}
+
+impl<'a> From<&'a str> for Symbol {
+    fn from(s: &'a str) -> Symbol {
+        match &s[..] {
+            "quote" => Symbol::Quote,
+            "atom" => Symbol::Atom,
+            "cons" => Symbol::Cons,
+            "car" => Symbol::Car,
+            "cdr" => Symbol::Cdr,
+            "pair" => Symbol::Pair,
+            "assoc" => Symbol::Assoc,
+            "eq" => Symbol::Eq,
+            "and" => Symbol::And,
+            "not" => Symbol::Not,
+            "null" => Symbol::Null,
+            "lambda" => Symbol::Lambda,
+            "if" => Symbol::If,
+            _ => panic!("ERROR: Not symbol.")
+        }
+    }
+}
+
+impl Symbol {
+    pub fn quote(&self) -> Form {
+        match self {
+            Symbol::Quote => Form::Atom("quote".to_string()),
+            Symbol::Atom => Form::Atom("atom".to_string()),
+            Symbol::Cons => Form::Atom("cons".to_string()),
+            Symbol::Car => Form::Atom("car".to_string()),
+            Symbol::Cdr => Form::Atom("cdr".to_string()),
+            Symbol::Pair => Form::Atom("pair".to_string()),
+            Symbol::Assoc => Form::Atom("assoc".to_string()),
+            Symbol::Eq => Form::Atom("eq".to_string()),
+            Symbol::And => Form::Atom("and".to_string()),
+            Symbol::Not => Form::Atom("not".to_string()),
+            Symbol::Null => Form::Atom("null".to_string()),
+            Symbol::Lambda => Form::Atom("lambda".to_string()),
+            Symbol::If => Form::Atom("if".to_string()),
+        }
+    }
+}
 
 #[allow(dead_code)]
 #[derive(Debug, PartialEq, Clone)]
@@ -37,6 +95,12 @@ impl<'a> From<Vec<&'a str>> for Form {
 impl Form {
     pub fn quote(self) -> Self {
         self
+    }
+    pub fn to_symbol(&self) -> Symbol {
+        match self {
+            Form::Atom(a) => Symbol::from(&a[..]),
+            _ => panic!("ERROR: Not symbol.")
+        }
     }
     pub fn atom(&self) -> Self {
         match self {
@@ -136,13 +200,13 @@ impl Form {
             },
         }
     }
-    pub fn and_(&self, rhs: &Self) -> Self {
+    pub fn and(&self, rhs: &Self) -> Self {
         match (self, rhs) {
             (Form::T, Form::T) => Form::T,
             _ => Form::Nil,
         }
     }
-    pub fn not_(&self) -> Self {
+    pub fn not(&self) -> Self {
         match self {
             Form::Nil => Form::T,
             _ => Form::Nil,
@@ -157,11 +221,3 @@ impl Form {
         }
     }
 }
-
-//lambda => ||
-//cond => if
-
-
-/*pub fn reader(s: String) -> Form {
-
-}*/

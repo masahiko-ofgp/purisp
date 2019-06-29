@@ -2,6 +2,8 @@
 
 Pure Lisp with Rust ??
 
+### Pure Lisp operators
+
 - [x] `quote`
 - [x] `atom`
 - [x] `cons`
@@ -12,7 +14,14 @@ Pure Lisp with Rust ??
 - [x] `append`
 - [x] `eq`
 - [x] `null`
-- [x] `and_`
-- [x] `not_`
+- [x] `and`
+- [x] `not`
+- [ ] `lambda`
+- [ ] `label`
+- [ ] `cond`
 - [ ] `eval`
 
+### Optional
+
+- [x] `to_symbol`
+- [x] `Symbol`
