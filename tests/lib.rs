@@ -26,14 +26,56 @@ fn test_to_symbol() {
 }
 
 #[test]
+fn test_from_form() {
+    let atm = Form::from("1");
+    let pair = Form::from(
+        (Form::Atom(1.to_string()), Form::Atom(2.to_string())
+         ));
+    let list = Form::from(vec!["1", "2"]);
+
+    assert_eq!(atm, Form::Atom("1".to_string()));
+    assert_eq!(
+        pair, 
+        Form::Pair(Box::new(
+                (Form::Atom("1".to_string()), Form::Atom("2".to_string()))
+                )
+            )
+        );
+    assert_eq!(
+        list,
+        Form::List(vec![
+            Form::Atom("1".to_string()),
+            Form::Atom("2".to_string())
+        ]));
+}
+
+#[test]
+fn test_get_pair_key_and_value() {
+    let pair = Form::Pair(Box::new(
+            (Form::Atom("key".to_string()), Form::Atom("value".to_string())
+             )));
+    assert_eq!(
+        &pair.get_pair_key().unwrap(),
+        &Form::Atom("key".to_string())
+        );
+    assert_eq!(
+        &pair.get_pair_value().unwrap(),
+        &Form::Atom("value".to_string())
+        );
+}
+#[test]
 fn test_atom() {
     let atm = Form::Atom("1".to_string());
     let nil = Form::Nil;
+    let pair = Form::Pair(Box::new(
+            (Form::Atom(1.to_string()), Form::Atom(2.to_string()))
+            ));
     let empty_list = Form::List(vec![]);
     let list = Form::from(vec!["1", "2"]);
 
     assert_eq!(atm.atom(), Form::T);
     assert_eq!(nil.atom(), Form::T);
+    assert_eq!(pair.atom(), Form::Nil);
     assert_eq!(empty_list.atom(), Form::T);
     assert_eq!(list.atom(), Form::Nil);
 }
@@ -77,11 +119,17 @@ fn test_pair_assoc() {
 
     assert_eq!(
         &pair_list,
-        &vec![
-            (Form::Atom("a".to_string()), Form::Atom("1".to_string())),
-            (Form::Atom("b".to_string()), Form::Atom("2".to_string())),
-            (Form::Atom("c".to_string()), Form::Atom("3".to_string()))
-        ]);
+        &Form::List(vec![
+            Form::Pair(Box::new(
+                    (Form::Atom("a".to_string()), Form::Atom("1".to_string()))
+                    )),
+            Form::Pair(Box::new(
+                    (Form::Atom("b".to_string()), Form::Atom("2".to_string()))
+                    )),
+            Form::Pair(Box::new(
+                    (Form::Atom("c".to_string()), Form::Atom("3".to_string()))
+                    )),
+        ]));
 
     let key = Form::from("a");
 

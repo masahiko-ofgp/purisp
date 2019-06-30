@@ -70,12 +70,19 @@ pub enum Form {
     Atom(String),
     T,
     Nil,
+    Pair(Box<(Form, Form)>),
     List(Vec<Form>),
 }
 
 impl<'a> From<&'a str> for Form {
     fn from(s: &'a str) -> Form {
         Form::Atom(s.to_string())
+    }
+}
+
+impl From<(Form, Form)> for Form {
+    fn from(pair: (Form, Form)) -> Form {
+        Form::Pair(Box::new(pair))
     }
 }
 
@@ -93,6 +100,7 @@ impl<'a> From<Vec<&'a str>> for Form {
 
 #[allow(dead_code)]
 impl Form {
+    //TODO: use??
     pub fn quote(self) -> Self {
         self
     }
@@ -102,11 +110,30 @@ impl Form {
             _ => panic!("ERROR: Not symbol.")
         }
     }
+    pub fn get_pair_key(&self) -> Option<Self> {
+        match self {
+            Form::Pair(p) => {
+                let pair = &*p;
+                Some(pair.0.clone())
+            },
+            _ => None
+        }
+    }
+    pub fn get_pair_value(&self) -> Option<Self> {
+        match self {
+            Form::Pair(p) => {
+                let pair = &*p;
+                Some(pair.1.clone())
+            },
+            _ => None
+        }
+    }
     pub fn atom(&self) -> Self {
         match self {
             Form::Atom(_) => Form::T,
             Form::T => Form::T,
             Form::Nil => Form::T,
+            Form::Pair(_) => Form::Nil,
             Form::List(v) => {
                 if v.len() == 0 {
                     Form::T
@@ -149,6 +176,13 @@ impl Form {
                     Form::Nil
                 }
             },
+            (Form::Pair(pa), Form::Pair(pb)) => {
+                if &*pa == &*pb {
+                    Form::T
+                } else {
+                    Form::Nil
+                }
+            },
             (Form::List(x), Form::List(y)) => {
                 if &x[..] == &y[..] {
                     Form::T
@@ -159,13 +193,15 @@ impl Form {
             _ => panic!("ERROR: Couldn't compare."),
         }
     }
-    pub fn pair(self, rhs: Self) -> Vec<(Form, Form)> {
+    pub fn pair(self, rhs: Self) -> Self {
         match (self, rhs) {
             (Form::List(l1), Form::List(l2)) => {
                 if l1.len() == l2.len() {
-                    l1.into_iter()
+                    let pairs = l1.into_iter()
                         .zip(l2.into_iter())
-                        .collect::<Vec<(Form, Form)>>()
+                        .map(|t| Form::from(t))
+                        .collect::<Vec<Form>>();
+                    Form::List(pairs)
                 } else {
                     panic!("ERROR: Not List");
                 }
@@ -173,17 +209,19 @@ impl Form {
             _ => panic!("ERROR: Not List."),
         }
     }
-    pub fn assoc(self, plist: Vec<(Form, Form)>) -> Option<Form> {
-        match self {
-            Form::Atom(_) => {
-                for (key, value) in &plist {
-                    if key.eq(&self) == Form::T {
-                        return Some(value.clone());
+    pub fn assoc(self, plist: Self) -> Option<Self> {
+        match plist {
+            Form::List(l) => {
+                for attr in &l {
+                    if self.eq(&attr.get_pair_key().unwrap()) == Form::T {
+                        return Some(attr.get_pair_value().unwrap());
+                    } else {
+                        return None;
                     }
                 }
                 None
             },
-            _ => panic!("ERROR: Key Error.")
+            _ => panic!("ERROR: Not List."),
         }
     }
     pub fn null(&self) -> Self {
@@ -191,6 +229,7 @@ impl Form {
             Form::Atom(_) => Form::Nil,
             Form::T => Form::Nil,
             Form::Nil => Form::T,
+            Form::Pair(_) => Form::Nil,
             Form::List(l) => {
                 if l.is_empty() {
                     Form::T

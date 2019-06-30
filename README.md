@@ -27,3 +27,6 @@ Pure Lisp with Rust ??
 
 - [x] `to_symbol`
 - [x] `Symbol`
+- [x] `Form::Pair`
+- [x] `get_pair_key`
+- [x] `get_pair_value`
