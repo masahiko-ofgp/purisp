@@ -5,6 +5,7 @@
 // This file may not be copied, modified, on distributed except
 //  according to those terms.
 
+
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 pub enum Symbol {
@@ -19,33 +20,13 @@ pub enum Symbol {
     And,
     Not,
     Null,
-    Lambda,
-    If,
-}
-
-impl<'a> From<&'a str> for Symbol {
-    fn from(s: &'a str) -> Symbol {
-        match &s[..] {
-            "quote" => Symbol::Quote,
-            "atom" => Symbol::Atom,
-            "cons" => Symbol::Cons,
-            "car" => Symbol::Car,
-            "cdr" => Symbol::Cdr,
-            "pair" => Symbol::Pair,
-            "assoc" => Symbol::Assoc,
-            "eq" => Symbol::Eq,
-            "and" => Symbol::And,
-            "not" => Symbol::Not,
-            "null" => Symbol::Null,
-            "lambda" => Symbol::Lambda,
-            "if" => Symbol::If,
-            _ => panic!("ERROR: Not symbol.")
-        }
-    }
 }
 
 impl Symbol {
-    pub fn quote(&self) -> Form {
+    pub fn quote(self) -> Self {
+        self
+    }
+    pub fn to_atom(&self) -> Form {
         match self {
             Symbol::Quote => Form::Atom("quote".to_string()),
             Symbol::Atom => Form::Atom("atom".to_string()),
@@ -58,8 +39,6 @@ impl Symbol {
             Symbol::And => Form::Atom("and".to_string()),
             Symbol::Not => Form::Atom("not".to_string()),
             Symbol::Null => Form::Atom("null".to_string()),
-            Symbol::Lambda => Form::Atom("lambda".to_string()),
-            Symbol::If => Form::Atom("if".to_string()),
         }
     }
 }
@@ -104,10 +83,25 @@ impl Form {
     pub fn quote(self) -> Self {
         self
     }
-    pub fn to_symbol(&self) -> Symbol {
+    pub fn to_symbol(self) -> Option<Symbol> {
         match self {
-            Form::Atom(a) => Symbol::from(&a[..]),
-            _ => panic!("ERROR: Not symbol.")
+            Form::Atom(s) => {
+                match &s[..] {
+                    "quote" => Some(Symbol::Quote),
+                    "atom" => Some(Symbol::Atom),
+                    "cons" => Some(Symbol::Cons),
+                    "car" => Some(Symbol::Car),
+                    "cdr" => Some(Symbol::Cdr),
+                    "pair" => Some(Symbol::Pair),
+                    "assoc" => Some(Symbol::Assoc),
+                    "eq" => Some(Symbol::Eq),
+                    "and" => Some(Symbol::And),
+                    "not" => Some(Symbol::Not),
+                    "null" => Some(Symbol::Null),
+                    _ => None
+                }
+            },
+            _ => panic!("ERROR: Not Atom.")
         }
     }
     pub fn get_pair_key(&self) -> Option<Self> {

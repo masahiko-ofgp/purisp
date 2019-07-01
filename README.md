@@ -18,15 +18,13 @@ Pure Lisp with Rust ??
 - [x] `null`
 - [x] `and`
 - [x] `not`
-- [ ] `lambda`
-- [ ] `label`
-- [ ] `cond`
 - [ ] `eval`
 
 ### Optional
 
 - [x] `to_symbol`
 - [x] `Symbol`
+- [x] `to_atom`
 - [x] `Form::Pair`
 - [x] `get_pair_key`
 - [x] `get_pair_value`

@@ -3,25 +3,13 @@ use purisp::core::{Symbol, Form};
 #[test]
 fn test_symbol() {
     assert_eq!(
-        Symbol::from("quote"),
-        Symbol::Quote,
-    );
-
-    let sym_atom = Symbol::Atom;
-    
-    assert_eq!(
-        &sym_atom.quote(),
-        &Form::Atom("atom".to_string())
-    );
-}
-
-#[test]
-fn test_to_symbol() {
-    let atm = Form::from("cons");
+        Symbol::Cons.to_atom(),
+        Form::Atom("cons".to_string())
+        );
 
     assert_eq!(
-        &atm.to_symbol(),
-        &Symbol::Cons,
+        Form::Atom("car".to_string()).to_symbol(),
+        Some(Symbol::Car)
         );
 }
 
