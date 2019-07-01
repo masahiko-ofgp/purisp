@@ -18,6 +18,7 @@ Pure Lisp with Rust ??
 - [x] `null`
 - [x] `and`
 - [x] `not`
+- [x] `apply`
 - [ ] `eval`
 
 ### Optional

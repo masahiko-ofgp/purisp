@@ -6,11 +6,3 @@
 //  according to those terms.
 
 pub mod core;
-//use core::{Symbol, Form};
-
-
-/*pub fn eval(form: Form) {
-    if &form.atom() == &Form::T {
-        
-    }
-}*/

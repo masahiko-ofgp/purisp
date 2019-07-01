@@ -86,16 +86,16 @@ fn test_cons_car_cdr() {
 
     assert_eq!(
         car, 
-        &Form::List(vec![
+        &Some(Form::List(vec![
                     Form::Atom("0".to_string())
-        ]));
+        ])));
     
     assert_eq!(
         cdr,
-        &Form::List(vec![
+        &Some(Form::List(vec![
                     Form::Atom("1".to_string()),
                     Form::Atom("2".to_string()),
-        ]));
+        ])));
 }
 
 #[test]
@@ -157,5 +157,14 @@ fn test_and_not() {
     assert_eq!(
         &list.atom().not(),
         &Form::T
+        );
+}
+
+#[test]
+fn test_lambda() {
+    let lambda = Form::Lambda(|list: Form| list.car().unwrap());
+    assert_eq!(
+        lambda.apply(Form::from(vec!["1", "2", "3"])),
+        Form::List(vec![Form::Atom("1".to_string())])
         );
 }

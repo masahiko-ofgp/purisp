@@ -5,6 +5,7 @@
 // This file may not be copied, modified, on distributed except
 //  according to those terms.
 
+use std::fmt;
 
 #[allow(dead_code)]
 #[derive(Debug, PartialEq)]
@@ -16,6 +17,7 @@ pub enum Symbol {
     Cdr,
     Pair,
     Assoc,
+    Append,
     Eq,
     And,
     Not,
@@ -35,6 +37,7 @@ impl Symbol {
             Symbol::Cdr => Form::Atom("cdr".to_string()),
             Symbol::Pair => Form::Atom("pair".to_string()),
             Symbol::Assoc => Form::Atom("assoc".to_string()),
+            Symbol::Append => Form::Atom("append".to_string()),
             Symbol::Eq => Form::Atom("eq".to_string()),
             Symbol::And => Form::Atom("and".to_string()),
             Symbol::Not => Form::Atom("not".to_string()),
@@ -51,6 +54,20 @@ pub enum Form {
     Nil,
     Pair(Box<(Form, Form)>),
     List(Vec<Form>),
+    Lambda(fn(Form) -> Form),
+}
+
+impl fmt::Display for Form {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            Form::Atom(a) => write!(f, "{:?}", a),
+            Form::T => write!(f, "t"),
+            Form::Nil => write!(f, "nil"),
+            Form::Pair(p) => write!(f, "{:?}", p),
+            Form::List(l) => write!(f, "{:?}", l),
+            Form::Lambda(_) => write!(f, "lambda"),
+        }
+    }
 }
 
 impl<'a> From<&'a str> for Form {
@@ -94,6 +111,7 @@ impl Form {
                     "cdr" => Some(Symbol::Cdr),
                     "pair" => Some(Symbol::Pair),
                     "assoc" => Some(Symbol::Assoc),
+                    "append" => Some(Symbol::Append),
                     "eq" => Some(Symbol::Eq),
                     "and" => Some(Symbol::And),
                     "not" => Some(Symbol::Not),
@@ -134,7 +152,8 @@ impl Form {
                 } else {
                     Form::Nil
                 }
-            }
+            },
+            Form::Lambda(_) => Form::Nil,
         }
     }
     pub fn cons(&mut self, value: Form) -> Form {
@@ -147,16 +166,16 @@ impl Form {
             _ => panic!("ERROR: Not List."),
         }
     }
-    pub fn car(&self) -> Self {
+    pub fn car(&self) -> Option<Self> {
         match self {
-            Form::List(l) => Form::List(l[..1].to_vec()),
-            _ => panic!("ERROR: Not List."),
+            Form::List(l) => Some(Form::List(l[..1].to_vec())),
+            _ => None,
         }
     }
-    pub fn cdr(&self) -> Self {
+    pub fn cdr(&self) -> Option<Self> {
         match self {
-            Form::List(l) => Form::List(l[1..].to_vec()),
-            _ => panic!("ERROR: Not List."),
+            Form::List(l) => Some(Form::List(l[1..].to_vec())),
+            _ => None,
         }
     }
     pub fn eq(&self, rhs: &Self) -> Self {
@@ -231,6 +250,7 @@ impl Form {
                     Form::Nil
                 }
             },
+            Form::Lambda(_) => Form::Nil,
         }
     }
     pub fn and(&self, rhs: &Self) -> Self {
@@ -251,6 +271,12 @@ impl Form {
                 l1.append(l2);
             },
             _ => panic!("ERROR: Not List.")
+        }
+    }
+    pub fn apply(self, params: Form) -> Self {
+        match self {
+            Form::Lambda(f) => f(params),
+            _ => panic!("ERROR: Not Function.")
         }
     }
 }
