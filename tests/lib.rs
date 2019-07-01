@@ -162,9 +162,16 @@ fn test_and_not() {
 
 #[test]
 fn test_lambda() {
-    let lambda = Form::Lambda(|list: Form| list.car().unwrap());
+    let hello = Form::Lambda(|_| Form::Atom("Hello".to_string()));
+
     assert_eq!(
-        lambda.apply(Form::from(vec!["1", "2", "3"])),
+        hello.apply(None),
+        Form::Atom("Hello".to_string())
+        );
+
+    let lambda = Form::Lambda(|list| list.unwrap().car().unwrap());
+    assert_eq!(
+        lambda.apply(Some(Form::from(vec!["1", "2", "3"]))),
         Form::List(vec![Form::Atom("1".to_string())])
         );
 }

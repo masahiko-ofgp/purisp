@@ -54,7 +54,7 @@ pub enum Form {
     Nil,
     Pair(Box<(Form, Form)>),
     List(Vec<Form>),
-    Lambda(fn(Form) -> Form),
+    Lambda(fn(Option<Form>) -> Form),
 }
 
 impl fmt::Display for Form {
@@ -273,9 +273,12 @@ impl Form {
             _ => panic!("ERROR: Not List.")
         }
     }
-    pub fn apply(self, params: Form) -> Self {
+    pub fn apply(self, params: Option<Form>) -> Self {
         match self {
-            Form::Lambda(f) => f(params),
+            Form::Lambda(f) => match params {
+                Some(p) => f(Some(p)),
+                None => f(None)
+            }
             _ => panic!("ERROR: Not Function.")
         }
     }
