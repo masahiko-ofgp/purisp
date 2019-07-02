@@ -38,20 +38,6 @@ fn test_from_form() {
 }
 
 #[test]
-fn test_get_pair_key_and_value() {
-    let pair = Form::Pair(Box::new(
-            (Form::Atom("key".to_string()), Form::Atom("value".to_string())
-             )));
-    assert_eq!(
-        &pair.get_pair_key().unwrap(),
-        &Form::Atom("key".to_string())
-        );
-    assert_eq!(
-        &pair.get_pair_value().unwrap(),
-        &Form::Atom("value".to_string())
-        );
-}
-#[test]
 fn test_atom() {
     let atm = Form::Atom("1".to_string());
     let nil = Form::Nil;
@@ -70,6 +56,17 @@ fn test_atom() {
 
 #[test]
 fn test_cons_car_cdr() {
+    let pair = Form::Atom("key".to_string()).cons(Form::Atom("value".to_string()));
+
+    assert_eq!(
+        &pair.car().unwrap(),
+        &Form::Atom("key".to_string())
+        );
+    assert_eq!(
+        &pair.cdr().unwrap(),
+        &Form::Atom("value".to_string())
+        );
+
     let mut list1 = Form::from(vec!["1", "2"]);
     let list2 = &mut list1.cons(Form::from("0"));
     

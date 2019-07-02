@@ -7,7 +7,6 @@
 
 use std::fmt;
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq)]
 pub enum Symbol {
     Quote,
@@ -46,7 +45,6 @@ impl Symbol {
     }
 }
 
-#[allow(dead_code)]
 #[derive(Debug, PartialEq, Clone)]
 pub enum Form {
     Atom(String),
@@ -122,24 +120,6 @@ impl Form {
             _ => panic!("ERROR: Not Atom.")
         }
     }
-    pub fn get_pair_key(&self) -> Option<Self> {
-        match self {
-            Form::Pair(p) => {
-                let pair = &*p;
-                Some(pair.0.clone())
-            },
-            _ => None
-        }
-    }
-    pub fn get_pair_value(&self) -> Option<Self> {
-        match self {
-            Form::Pair(p) => {
-                let pair = &*p;
-                Some(pair.1.clone())
-            },
-            _ => None
-        }
-    }
     pub fn atom(&self) -> Self {
         match self {
             Form::Atom(_) => Form::T,
@@ -163,17 +143,25 @@ impl Form {
                 new_list.append(l);
                 Form::List(new_list)
             },
-            _ => panic!("ERROR: Not List."),
+            _ => Form::Pair(Box::new((self.clone(), value))),
         }
     }
     pub fn car(&self) -> Option<Self> {
         match self {
+            Form::Pair(p) => {
+                let pair = &*p;
+                Some(pair.0.clone())
+            },
             Form::List(l) => Some(Form::List(l[..1].to_vec())),
             _ => None,
         }
     }
     pub fn cdr(&self) -> Option<Self> {
         match self {
+            Form::Pair(p) => {
+                let pair = &*p;
+                Some(pair.1.clone())
+            },
             Form::List(l) => Some(Form::List(l[1..].to_vec())),
             _ => None,
         }
@@ -226,8 +214,8 @@ impl Form {
         match plist {
             Form::List(l) => {
                 for attr in &l {
-                    if self.eq(&attr.get_pair_key().unwrap()) == Form::T {
-                        return Some(attr.get_pair_value().unwrap());
+                    if self.eq(&attr.car().unwrap()) == Form::T {
+                        return Some(attr.cdr().unwrap());
                     } else {
                         return None;
                     }
