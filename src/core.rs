@@ -74,9 +74,31 @@ impl<'a> From<&'a str> for Form {
     }
 }
 
+impl Into<String> for Form {
+    fn into(self) -> String {
+        match self {
+            Form::Atom(a) => a[..].to_string(),
+            _ => panic!("ERROR")
+        }
+    }
+}
+
 impl From<(Form, Form)> for Form {
     fn from(pair: (Form, Form)) -> Form {
         Form::Pair(Box::new(pair))
+    }
+}
+
+impl Into<(String, String)> for Form {
+    fn into(self) -> (String, String) {
+        match self {
+            Form::Pair(_) => {
+                let car: String = self.car().unwrap().into();
+                let cdr: String = self.cdr().unwrap().into();
+                (car, cdr)
+            },
+            _ => panic!("ERROR")
+        }
     }
 }
 
@@ -92,7 +114,40 @@ impl<'a> From<Vec<&'a str>> for Form {
     }
 }
 
-#[allow(dead_code)]
+impl Into<Vec<String>> for Form {
+    fn into(self) -> Vec<String> {
+        match self {
+            Form::List(l) => {
+                l.clone()
+                    .into_iter()
+                    .fold(Vec::new(), |mut v, s| {
+                        let atm: String = s.into();
+                        v.push(atm);
+                        v
+                    })
+            },
+            _ => panic!("ERROR")
+        }
+    }
+}
+
+impl Into<Vec<(String, String)>> for Form {
+    fn into(self) -> Vec<(String, String)> {
+        match self {
+            Form::List(l) => {
+                l.clone()
+                    .into_iter()
+                    .fold(Vec::new(), |mut v, tp| {
+                        let tuple: (String, String) = tp.into();
+                        v.push(tuple);
+                        v
+                    })
+            },
+            _ => panic!("ERROR")
+        }
+    }
+}
+
 impl Form {
     //TODO: use??
     pub fn quote(self) -> Self {

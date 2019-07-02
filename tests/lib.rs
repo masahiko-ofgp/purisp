@@ -38,6 +38,41 @@ fn test_from_form() {
 }
 
 #[test]
+fn test_into_rust_type() {
+    let atom = Form::from("hello");
+    let rust_string: String = atom.into();
+
+    assert_eq!(rust_string, "hello".to_string());
+
+    let pair = Form::from((Form::from("1"), Form::from("2")));
+    let rust_tuple: (String, String) = pair.into();
+    
+    assert_eq!(rust_tuple, ("1".to_string(), "2".to_string()));
+
+    let list = Form::from(vec!["1", "2"]);
+    let rust_vec: Vec<String> = list.into();
+    
+    assert_eq!(
+        rust_vec,
+        vec!["1".to_string(), "2".to_string()]
+        );
+
+    let list1 = Form::from(vec!["a", "b"]);
+    let list2 = Form::from(vec!["1", "2"]);
+    let plist = list1.pair(list2);
+
+    let rust_tuple_vec: Vec<(String, String)> = plist.into();
+
+    assert_eq!(
+        rust_tuple_vec,
+        vec![
+        ("a".to_string(), "1".to_string()),
+        ("b".to_string(), "2".to_string()),
+        ]
+        );
+}
+
+#[test]
 fn test_atom() {
     let atm = Form::Atom("1".to_string());
     let nil = Form::Nil;
