@@ -16,9 +16,7 @@ fn test_symbol() {
 #[test]
 fn test_from_form() {
     let atm = Form::from("1");
-    let pair = Form::from(
-        (Form::Atom(1.to_string()), Form::Atom(2.to_string())
-         ));
+    let pair = Form::from(("1", "2"));
     let list = Form::from(vec!["1", "2"]);
 
     assert_eq!(atm, Form::Atom("1".to_string()));
@@ -44,7 +42,7 @@ fn test_into_rust_type() {
 
     assert_eq!(rust_string, "hello".to_string());
 
-    let pair = Form::from((Form::from("1"), Form::from("2")));
+    let pair = Form::from(("1", "2"));
     let rust_tuple: (String, String) = pair.into();
     
     assert_eq!(rust_tuple, ("1".to_string(), "2".to_string()));
@@ -91,7 +89,7 @@ fn test_atom() {
 
 #[test]
 fn test_cons_car_cdr() {
-    let pair = Form::Atom("key".to_string()).cons(Form::Atom("value".to_string()));
+    let pair = Form::from("key").cons(Form::from("value"));
 
     assert_eq!(
         &pair.car().unwrap(),

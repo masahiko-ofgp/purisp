@@ -83,6 +83,14 @@ impl Into<String> for Form {
     }
 }
 
+impl<'a> From<(&'a str, &'a str)> for Form {
+    fn from(pair: (&'a str, &'a str)) -> Form {
+        Form::Pair(Box::new(
+                (Form::from(pair.0), Form::from(pair.1))
+                ))
+    }
+}
+
 impl From<(Form, Form)> for Form {
     fn from(pair: (Form, Form)) -> Form {
         Form::Pair(Box::new(pair))
