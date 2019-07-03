@@ -27,7 +27,7 @@ pub fn reader(sexp: String) -> Form {
     Form::from(list)
 }
 
-
+// TODO: Still on the way
 pub fn eval(form: Form) -> Form {
     match form.car() {
         Some(frm) => {
@@ -47,6 +47,7 @@ pub fn eval(form: Form) -> Form {
                 eval(form.cadr().unwrap())
                     .cons(eval(form.cdr().unwrap().cadr().unwrap()))
             } else {
+                // Temporary return.
                 Form::Nil
             }
         },
