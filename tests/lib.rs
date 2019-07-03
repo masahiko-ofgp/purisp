@@ -1,23 +1,12 @@
-use purisp::core::{Symbol, Form};
+use purisp::core::Form;
 
-#[test]
-fn test_symbol() {
-    assert_eq!(
-        Symbol::Cons.to_atom(),
-        Form::Atom("cons".to_string())
-        );
-
-    assert_eq!(
-        Form::Atom("car".to_string()).to_symbol(),
-        Some(Symbol::Car)
-        );
-}
 
 #[test]
 fn test_from_form() {
     let atm = Form::from("1");
     let pair = Form::from(("1", "2"));
     let list = Form::from(vec!["1", "2"]);
+    let list2 = Form::from(vec![Form::from("1"), Form::from("2")]);
 
     assert_eq!(atm, Form::Atom("1".to_string()));
     assert_eq!(
@@ -28,11 +17,13 @@ fn test_from_form() {
             )
         );
     assert_eq!(
-        list,
-        Form::List(vec![
+        &list,
+        &Form::List(vec![
             Form::Atom("1".to_string()),
             Form::Atom("2".to_string())
         ]));
+
+    assert_eq!(list, list2);
 }
 
 #[test]
@@ -116,9 +107,8 @@ fn test_cons_car_cdr() {
 
     assert_eq!(
         car, 
-        &Some(Form::List(vec![
-                    Form::Atom("0".to_string())
-        ])));
+        &Some(Form::Atom("0".to_string()))
+        );
     
     assert_eq!(
         cdr,
@@ -202,6 +192,6 @@ fn test_lambda() {
     let lambda = Form::Lambda(|list| list.unwrap().car().unwrap());
     assert_eq!(
         lambda.apply(Some(Form::from(vec!["1", "2", "3"]))),
-        Form::List(vec![Form::Atom("1".to_string())])
+        Form::Atom("1".to_string())
         );
 }

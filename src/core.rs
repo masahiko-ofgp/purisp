@@ -7,43 +7,6 @@
 
 use std::fmt;
 
-#[derive(Debug, PartialEq)]
-pub enum Symbol {
-    Quote,
-    Atom,
-    Cons,
-    Car,
-    Cdr,
-    Pair,
-    Assoc,
-    Append,
-    Eq,
-    And,
-    Not,
-    Null,
-}
-
-impl Symbol {
-    pub fn quote(self) -> Self {
-        self
-    }
-    pub fn to_atom(&self) -> Form {
-        match self {
-            Symbol::Quote => Form::Atom("quote".to_string()),
-            Symbol::Atom => Form::Atom("atom".to_string()),
-            Symbol::Cons => Form::Atom("cons".to_string()),
-            Symbol::Car => Form::Atom("car".to_string()),
-            Symbol::Cdr => Form::Atom("cdr".to_string()),
-            Symbol::Pair => Form::Atom("pair".to_string()),
-            Symbol::Assoc => Form::Atom("assoc".to_string()),
-            Symbol::Append => Form::Atom("append".to_string()),
-            Symbol::Eq => Form::Atom("eq".to_string()),
-            Symbol::And => Form::Atom("and".to_string()),
-            Symbol::Not => Form::Atom("not".to_string()),
-            Symbol::Null => Form::Atom("null".to_string()),
-        }
-    }
-}
 
 #[derive(Debug, PartialEq, Clone)]
 pub enum Form {
@@ -59,11 +22,11 @@ impl fmt::Display for Form {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
             Form::Atom(a) => write!(f, "{:?}", a),
-            Form::T => write!(f, "t"),
-            Form::Nil => write!(f, "nil"),
+            Form::T => write!(f, "T"),
+            Form::Nil => write!(f, "NIL"),
             Form::Pair(p) => write!(f, "{:?}", p),
             Form::List(l) => write!(f, "{:?}", l),
-            Form::Lambda(_) => write!(f, "lambda"),
+            Form::Lambda(_) => write!(f, "LAMBDA"),
         }
     }
 }
@@ -122,6 +85,19 @@ impl<'a> From<Vec<&'a str>> for Form {
     }
 }
 
+// `list` function like
+impl From<Vec<Form>> for Form {
+    fn from(v: Vec<Form>) -> Form {
+        Form::List(
+            v.iter()
+            .fold(Vec::new(), |mut vc, f| {
+                vc.push(f.clone());
+                vc
+            })
+            )
+    }
+}
+
 impl Into<Vec<String>> for Form {
     fn into(self) -> Vec<String> {
         match self {
@@ -161,28 +137,6 @@ impl Form {
     pub fn quote(self) -> Self {
         self
     }
-    pub fn to_symbol(self) -> Option<Symbol> {
-        match self {
-            Form::Atom(s) => {
-                match &s[..] {
-                    "quote" => Some(Symbol::Quote),
-                    "atom" => Some(Symbol::Atom),
-                    "cons" => Some(Symbol::Cons),
-                    "car" => Some(Symbol::Car),
-                    "cdr" => Some(Symbol::Cdr),
-                    "pair" => Some(Symbol::Pair),
-                    "assoc" => Some(Symbol::Assoc),
-                    "append" => Some(Symbol::Append),
-                    "eq" => Some(Symbol::Eq),
-                    "and" => Some(Symbol::And),
-                    "not" => Some(Symbol::Not),
-                    "null" => Some(Symbol::Null),
-                    _ => None
-                }
-            },
-            _ => panic!("ERROR: Not Atom.")
-        }
-    }
     pub fn atom(&self) -> Self {
         match self {
             Form::Atom(_) => Form::T,
@@ -215,7 +169,7 @@ impl Form {
                 let pair = &*p;
                 Some(pair.0.clone())
             },
-            Form::List(l) => Some(Form::List(l[..1].to_vec())),
+            Form::List(l) => Some(Form::from(l[0].clone())),
             _ => None,
         }
     }
@@ -227,6 +181,18 @@ impl Form {
             },
             Form::List(l) => Some(Form::List(l[1..].to_vec())),
             _ => None,
+        }
+    }
+    pub fn cadr(&self) -> Option<Self> {
+        match self.cdr() {
+            Some(frm) => frm.car(),
+            None => None,
+        }
+    }
+    pub fn cddr(&self) -> Option<Self> {
+        match self.cdr() {
+            Some(frm) => frm.cdr(),
+            None => None,
         }
     }
     pub fn eq(&self, rhs: &Self) -> Self {
