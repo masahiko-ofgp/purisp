@@ -23,7 +23,4 @@ Pure Lisp with Rust ??
 
 ### Optional
 
-- [x] `to_symbol`
-- [x] `Symbol`
-- [x] `to_atom`
 - [x] `Form::Pair`
