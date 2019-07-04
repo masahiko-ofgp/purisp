@@ -183,18 +183,6 @@ impl Form {
             _ => None,
         }
     }
-    pub fn cadr(&self) -> Option<Self> {
-        match self.cdr() {
-            Some(frm) => frm.car(),
-            None => None,
-        }
-    }
-    pub fn cddr(&self) -> Option<Self> {
-        match self.cdr() {
-            Some(frm) => frm.cdr(),
-            None => None,
-        }
-    }
     pub fn eq(&self, rhs: &Self) -> Self {
         match (self, rhs) {
             (Form::T, Form::T) => Form::T,
@@ -239,17 +227,17 @@ impl Form {
             _ => panic!("ERROR: Not List."),
         }
     }
-    pub fn assoc(self, plist: Self) -> Option<Self> {
+    pub fn assoc(self, plist: &Self) -> Form {
         match plist {
             Form::List(l) => {
-                for attr in &l {
+                for attr in l {
                     if self.eq(&attr.car().unwrap()) == Form::T {
-                        return Some(attr.cdr().unwrap());
+                        return attr.cdr().unwrap().clone();
                     } else {
-                        return None;
+                        return Form::Nil;
                     }
                 }
-                None
+                Form::Nil
             },
             _ => panic!("ERROR: Not List."),
         }

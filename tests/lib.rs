@@ -140,10 +140,15 @@ fn test_pair_assoc() {
         ]));
 
     let key = Form::from("a");
+    let key2 = Form::from("d");
 
     assert_eq!(
-        key.assoc(pair_list),
-        Some(Form::Atom("1".to_string()))
+        key.assoc(&pair_list),
+        Form::Atom("1".to_string())
+        );
+    assert_eq!(
+        key2.assoc(&pair_list),
+        Form::Nil
         );
 }
 
