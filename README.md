@@ -1,7 +1,5 @@
 # Purisp
 
-[![Build Status](https://travis-ci.org/masahiko-ofgp/purisp.svg?branch=master)](https://travis-ci.org/masahiko-ofgp/purisp)
-
 Pure Lisp with Rust ??
 
 ### Pure Lisp operators
